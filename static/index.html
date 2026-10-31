@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechStore — Computadoras y Tecnología</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="#/" class="logo" data-link>
+          <span class="logo-icon">⚡</span>
+          <span class="logo-text">TechStore</span>
+        </a>
+        <nav class="nav">
+          <a href="#/" class="nav-link" data-link>Catálogo</a>
+          <a href="#/cart" class="nav-link cart-link" data-link>
+            Carrito
+            <span id="cart-badge" class="badge hidden">0</span>
+          </a>
+        </nav>
+        <button id="theme-toggle" class="btn-icon" aria-label="Cambiar tema" title="Modo oscuro/claro">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main" class="main container">
+      <!-- Views injected here -->
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>TechStore © 2026 — Tienda demo. El pago está deshabilitado intencionalmente.</p>
+        <p class="footer-note">Tasa de impuestos de ejemplo (pendiente de confirmación empresarial).</p>
+      </div>
+    </footer>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
