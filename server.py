@@ -34,7 +34,16 @@ def init_db():
     schema = (BASE_DIR / "sql" / "schema.sql").read_text(encoding="utf-8")
     seed = (BASE_DIR / "sql" / "seed.sql").read_text(encoding="utf-8")
     conn.executescript(schema)
+    # Migrate: add featured column if missing (existing DBs)
+    try:
+        conn.execute("SELECT featured FROM products LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE products ADD COLUMN featured INTEGER NOT NULL DEFAULT 0 CHECK(featured IN (0,1))")
+        print("[DB] Added featured column")
     conn.executescript(seed)
+    # Ensure featured flags from seed are applied (INSERT OR IGNORE may skip)
+    conn.execute("UPDATE products SET featured = 1 WHERE id IN (1, 2, 7, 11, 18)")
+    conn.execute("UPDATE products SET featured = 0 WHERE id NOT IN (1, 2, 7, 11, 18)")
     conn.commit()
     conn.close()
     print(f"[DB] Initialized at {DB_PATH}")
@@ -131,6 +140,18 @@ class TechStoreHandler(SimpleHTTPRequestHandler):
         try:
             if path == "/api/categories":
                 rows = conn.execute("SELECT * FROM categories ORDER BY name").fetchall()
+                self._send_json(rows_to_list(rows))
+                return
+
+            if path == "/api/featured":
+                rows = conn.execute("""
+                    SELECT p.*, c.name as category_name, c.slug as category_slug
+                    FROM products p
+                    JOIN categories c ON c.id = p.category_id
+                    WHERE p.featured = 1 AND p.available = 1 AND p.stock > 0
+                    ORDER BY p.price DESC
+                    LIMIT 6
+                """).fetchall()
                 self._send_json(rows_to_list(rows))
                 return
 
@@ -362,17 +383,8 @@ class TechStoreHandler(SimpleHTTPRequestHandler):
 
 
 def main():
-    if not DB_PATH.exists():
-        init_db()
-    else:
-        # Ensure schema is present
-        conn = get_db()
-        try:
-            conn.execute("SELECT 1 FROM products LIMIT 1")
-        except sqlite3.OperationalError:
-            init_db()
-        finally:
-            conn.close()
+    # Always ensure DB + featured column + seed flags
+    init_db()
 
     print(f"TechStore running at http://localhost:{PORT}")
     print(f"Tax rate (example): {TAX_RATE*100}% - pending company confirmation")

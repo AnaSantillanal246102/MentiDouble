@@ -140,7 +140,21 @@ async function render() {
 // A. Catalog
 async function viewCatalog(main) {
   main.innerHTML = `
-    <h1 class="page-title">Catálogo de productos</h1>
+    <section class="hero" id="hero-section">
+      <div class="hero-content">
+        <div class="hero-text">
+          <span class="hero-badge">Destacados</span>
+          <h1>Lo mejor en tecnología, listo para ti</h1>
+          <p>Laptops, PCs gaming, monitores y componentes seleccionados por rendimiento y relación calidad-precio. Explora nuestras recomendaciones.</p>
+          <a href="#catalog-anchor" class="btn btn-primary hero-cta" id="hero-cta">Ver catálogo completo</a>
+        </div>
+        <div class="hero-featured" id="hero-featured">
+          <p class="text-muted" style="opacity:0.7">Cargando destacados...</p>
+        </div>
+      </div>
+    </section>
+
+    <h1 class="page-title" id="catalog-anchor">Catálogo de productos</h1>
     <p class="page-subtitle">Computadoras, componentes y accesorios tecnológicos</p>
     <div class="toolbar">
       <input type="search" id="search" class="search-input" placeholder="Buscar productos..." />
@@ -152,6 +166,41 @@ async function viewCatalog(main) {
       <div class="empty-state"><p>Cargando...</p></div>
     </div>
   `;
+
+  // Load featured products for hero
+  try {
+    const featured = await api('/featured');
+    const heroBox = $('#hero-featured');
+    if (featured.length) {
+      heroBox.innerHTML = featured.slice(0, 4).map(p => `
+        <a href="#/product/${p.id}" class="hero-card" data-link>
+          <img src="${p.image_url}" alt="${escapeHtml(p.name)}" loading="lazy" />
+          <div class="hero-card-body">
+            <span class="hero-card-name">${escapeHtml(p.name)}</span>
+            <span class="hero-card-price">${formatPrice(p.price)}</span>
+          </div>
+        </a>
+      `).join('');
+      $$('#hero-featured [data-link]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          navigate(a.getAttribute('href').replace('#', ''));
+        });
+      });
+    } else {
+      heroBox.innerHTML = '';
+    }
+  } catch (e) {
+    console.warn('Featured load failed', e);
+    const heroBox = $('#hero-featured');
+    if (heroBox) heroBox.innerHTML = '';
+  }
+
+  // Smooth scroll for CTA
+  $('#hero-cta')?.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('catalog-anchor')?.scrollIntoView({ behavior: 'smooth' });
+  });
 
   const cats = await api('/categories');
   const sel = $('#category');

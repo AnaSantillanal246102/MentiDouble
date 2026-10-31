@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS products (
     category_id INTEGER NOT NULL,
     image_url TEXT,
     available INTEGER NOT NULL DEFAULT 1 CHECK(available IN (0,1)),
+    featured INTEGER NOT NULL DEFAULT 0 CHECK(featured IN (0,1)),
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );

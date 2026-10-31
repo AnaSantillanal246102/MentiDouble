@@ -1,0 +1,17 @@
+[DB] Initialized at /home/workdir/artifacts/techstore/data/techstore.db
+TechStore running at http://localhost:8080
+Tax rate (example): 16.0% - pending company confirmation
+Payment is DISABLED by design.
+Traceback (most recent call last):
+  File "/home/workdir/artifacts/techstore/server.py", line 400, in <module>
+    main()
+  File "/home/workdir/artifacts/techstore/server.py", line 392, in main
+    server = HTTPServer(("0.0.0.0", PORT), TechStoreHandler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/usr/lib/python3.12/http/server.py", line 136, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/lib/python3.12/socketserver.py", line 473, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
